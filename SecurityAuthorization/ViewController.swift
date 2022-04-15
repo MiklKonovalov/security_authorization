@@ -35,9 +35,9 @@ class ViewController: UIViewController {
     }()
     
     @objc func loginButtonTap() {
-        localAuthorizationService.authorizeIfPossible { compleation in
-            if compleation == true {
-                guard compleation == true, self.error == nil else {
+        localAuthorizationService.authorizeIfPossible { success, error in
+            if let error = error {
+                DispatchQueue.main.async {
                     let alert = UIAlertController(title: "Failed to Authentificate",
                                                 message: "Please try again",
                                                 preferredStyle: .alert)
@@ -45,22 +45,18 @@ class ViewController: UIViewController {
                                                 style: .cancel,
                                                 handler: nil))
                     self.present(alert, animated: true)
-                    return
                 }
-                let viewController = UIViewController()
-                viewController.title = "Welcome!"
-                viewController.view.backgroundColor = .blue
-                self.present(UINavigationController(rootViewController: viewController),
-                              animated: true,
-                              completion: nil)
-            } else {
-                let alert = UIAlertController(title: "Unavailable",
-                                              message: "You can't use this feauture",
-                                              preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Dismiss",
-                                              style: .cancel,
-                                              handler: nil))
-                self.present(alert, animated: true)
+                return
+            }
+            if success {
+                DispatchQueue.main.async {
+                    let viewController = UIViewController()
+                    viewController.title = "Welcome!"
+                    viewController.view.backgroundColor = .blue
+                    self.present(UINavigationController(rootViewController: viewController),
+                                  animated: true,
+                                  completion: nil)
+                }
             }
         }
     }
